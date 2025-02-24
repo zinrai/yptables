@@ -1,0 +1,53 @@
+tables:
+  filter:
+    chains:
+      INPUT:
+        policy: DROP
+        rules:
+          - protocol: tcp
+            match:
+              - name: tcp
+                options:
+                  dport: "22"
+            jump: ACCEPT
+
+          - protocol: tcp
+            match:
+              - name: multiport
+                options:
+                  dports: "80,443"
+              - name: comment
+                options:
+                  comment: "Web traffic"
+            jump: WEB
+
+      WEB:
+        rules:
+          - source: 10.0.0.0/8
+            match:
+              - name: comment
+                options:
+                  comment: "Allow internal network"
+            jump: ACCEPT
+
+          - match:
+              - name: comment
+                options:
+                  comment: "Drop other web traffic"
+            jump: DROP
+
+  nat:
+    chains:
+      PREROUTING:
+        rules:
+          - protocol: tcp
+            match:
+              - name: tcp
+                options:
+                  dport: "80"
+              - name: comment
+                options:
+                  comment: "Redirect HTTP to local proxy"
+            jump: REDIRECT
+            options:
+              to-port: "8080"
