@@ -1,0 +1,67 @@
+tables:
+  filter:
+    chains:
+      INPUT:
+        policy: DROP
+        rules:
+          - in-interface: lo
+            jump: ACCEPT
+          - match:
+              - name: state
+                options:
+                  state: "RELATED,ESTABLISHED"
+            jump: ACCEPT
+          - protocol: icmp
+            jump: ACCEPT
+          - match:
+              - name: state
+                options:
+                  state: "NEW"
+            jump: chain-classify-source
+
+      FORWARD:
+        policy: DROP
+
+      OUTPUT:
+        policy: ACCEPT
+
+      # Custom Chains
+      chain-classify-source:
+        rules:
+          - source: 192.168.1.0/24
+            jump: chain-trusted-sources
+          - source: 203.0.113.0/24
+            jump: chain-corp-network
+          - source: 198.51.100.10
+            jump: chain-monitoring-sources
+          - source: 198.51.100.11
+            jump: chain-monitoring-sources
+          - jump: chain-log-and-drop
+
+      chain-trusted-sources:
+        rules:
+          - protocol: tcp
+            dport: "22"
+            jump: ACCEPT
+          - protocol: udp
+            dport: "161"
+            jump: ACCEPT
+
+      chain-corp-network:
+        rules:
+          - protocol: tcp
+            dport: "8443"
+            jump: ACCEPT
+
+      chain-monitoring-sources:
+        rules:
+          - protocol: tcp
+            dport: "5666"
+            jump: ACCEPT
+          - protocol: udp
+            dport: "161"
+            jump: ACCEPT
+
+      chain-log-and-drop:
+        rules:
+          - jump: DROP
