@@ -30,7 +30,7 @@ Options:
 
 ## Configuration Example
 
-See [example.yaml](example.yaml) for a configuration example.
+See [examples](./examples) directory for a configuration example.
 
 ## Examples
 
