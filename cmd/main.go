@@ -12,8 +12,6 @@ import (
 )
 
 func main() {
-	// Command line flags
-	formatFlag := flag.String("format", "script", "Output format: 'script' or 'restore'")
 	outputFlag := flag.String("output", "", "Output file (default: stdout)")
 
 	flag.Usage = func() {
@@ -29,32 +27,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Determine output format
-	var format generator.Format
-	switch *formatFlag {
-	case "script":
-		format = generator.ShellScript
-	case "restore":
-		format = generator.IPTablesRestore
-	default:
-		log.Fatalf("Invalid format: %s", *formatFlag)
-	}
-
 	// Load configuration
 	cfg, err := config.LoadFromFile(flag.Arg(0))
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-	// Generate commands
-	gen := generator.New(format)
-	commands, err := gen.Generate(cfg)
+	// Generate iptables-restore format
+	gen := generator.New()
+	lines, err := gen.Generate(cfg)
 	if err != nil {
-		log.Fatalf("Failed to generate commands: %v", err)
+		log.Fatalf("Failed to generate iptables-restore output: %v", err)
 	}
 
 	// Output the result
-	content := strings.Join(commands, "\n") + "\n"
+	content := strings.Join(lines, "\n") + "\n"
 	if *outputFlag == "" {
 		fmt.Print(content)
 	} else {

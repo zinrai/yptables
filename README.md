@@ -1,13 +1,13 @@
 # yptables
 
-yptables is a tool that generates iptables configurations from YAML files. It supports both shell script and iptables-restore formats.
+yptables is a tool that generates iptables-restore format configurations from YAML files.
 
 ## Features
 
 - YAML-based configuration for iptables rules
 - Supports filter and nat tables
 - Handles both built-in and custom chains
-- Generates either shell script or iptables-restore format
+- Generates iptables-restore format for atomic rule application
 - Full support for iptables match modules
 
 ## Installation
@@ -19,11 +19,9 @@ $ go build -o yptables cmd/main.go
 ## Usage
 
 ```bash
-yptables [options] <config.yaml>
+yptables [options] <config.yaml
 
 Options:
-  -format string
-        Output format: 'script' or 'restore' (default "script")
   -output string
         Output file (default: stdout)
 ```
@@ -34,22 +32,22 @@ See [examples](./examples) directory for a configuration example.
 
 ## Examples
 
-Generate shell script:
-
-```bash
-$ yptables config.yaml > iptables.sh
-```
-
 Generate iptables-restore format:
 
 ```bash
-$ yptables -format restore config.yaml > iptables.rules
+$ yptables config.yaml > iptables.rules
 ```
 
-Generated configurations can be validated using iptables-restore --test:
+Validate generated configuration:
 
 ```bash
 $ sudo iptables-restore --test iptables.rules
+```
+
+Apply configuration:
+
+```bash
+$ sudo iptables-restore iptables.rules
 ```
 
 ## License
