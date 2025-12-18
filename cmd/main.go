@@ -12,12 +12,8 @@ import (
 )
 
 func main() {
-	outputFlag := flag.String("output", "", "Output file (default: stdout)")
-
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: %s [options] <config.yaml>\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "\nOptions:\n")
-		flag.PrintDefaults()
+		fmt.Fprintf(os.Stderr, "Usage: %s <config.yaml>\n", os.Args[0])
 	}
 
 	flag.Parse()
@@ -40,13 +36,7 @@ func main() {
 		log.Fatalf("Failed to generate iptables-restore output: %v", err)
 	}
 
-	// Output the result
+	// Output to stdout
 	content := strings.Join(lines, "\n") + "\n"
-	if *outputFlag == "" {
-		fmt.Print(content)
-	} else {
-		if err := os.WriteFile(*outputFlag, []byte(content), 0644); err != nil {
-			log.Fatalf("Failed to write output: %v", err)
-		}
-	}
+	fmt.Print(content)
 }

@@ -19,11 +19,7 @@ $ go build -o yptables cmd/main.go
 ## Usage
 
 ```bash
-yptables [options] <config.yaml
-
-Options:
-  -output string
-        Output file (default: stdout)
+$ yptables <config.yaml>
 ```
 
 ## Configuration Example
