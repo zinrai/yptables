@@ -1,10 +1,31 @@
-package config
+package main
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"os"
+
+	"gopkg.in/yaml.v3"
 )
+
+// builtinChains lists the built-in chains for each supported table.
+var builtinChains = map[string][]string{
+	"filter": {"INPUT", "FORWARD", "OUTPUT"},
+	"nat":    {"PREROUTING", "POSTROUTING", "OUTPUT"},
+}
+
+// isBuiltinChain reports whether chainName is a built-in chain of tableName.
+func isBuiltinChain(tableName, chainName string) bool {
+	chains, ok := builtinChains[tableName]
+	if !ok {
+		return false
+	}
+	for _, c := range chains {
+		if c == chainName {
+			return true
+		}
+	}
+	return false
+}
 
 // LoadFromFile reads and parses the YAML configuration file
 func LoadFromFile(filename string) (*Config, error) {
@@ -53,33 +74,11 @@ func validateTable(name string, table *TableConfig) error {
 
 // validateChain checks if the chain configuration is valid
 func validateChain(tableName, chainName string, chain *ChainConfig) error {
-	// Check if built-in chain has policy
-	builtinChains := getBuiltinChains(tableName)
-	isBuiltin := false
-	for _, c := range builtinChains {
-		if chainName == c {
-			isBuiltin = true
-			break
-		}
-	}
-
-	if isBuiltin && chain.Policy != "" {
+	if isBuiltinChain(tableName, chainName) && chain.Policy != "" {
 		if chain.Policy != "ACCEPT" && chain.Policy != "DROP" {
 			return fmt.Errorf("invalid policy for chain %s: %s", chainName, chain.Policy)
 		}
 	}
 
 	return nil
-}
-
-// getBuiltinChains returns the built-in chains for a given table
-func getBuiltinChains(tableName string) []string {
-	switch tableName {
-	case "filter":
-		return []string{"INPUT", "FORWARD", "OUTPUT"}
-	case "nat":
-		return []string{"PREROUTING", "POSTROUTING", "OUTPUT"}
-	default:
-		return []string{}
-	}
 }

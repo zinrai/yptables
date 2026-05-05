@@ -13,7 +13,7 @@ yptables is a tool that generates iptables-restore format configurations from YA
 ## Installation
 
 ```bash
-$ go build -o yptables cmd/main.go
+$ go build -o yptables .
 ```
 
 ## Usage

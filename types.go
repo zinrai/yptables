@@ -1,4 +1,4 @@
-package config
+package main
 
 // Config represents the complete iptables configuration
 type Config struct {

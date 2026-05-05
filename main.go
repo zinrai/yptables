@@ -6,9 +6,6 @@ import (
 	"log"
 	"os"
 	"strings"
-
-	"github.com/zinrai/yptables/internal/config"
-	"github.com/zinrai/yptables/internal/generator"
 )
 
 func main() {
@@ -23,20 +20,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Load configuration
-	cfg, err := config.LoadFromFile(flag.Arg(0))
+	cfg, err := LoadFromFile(flag.Arg(0))
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-	// Generate iptables-restore format
-	gen := generator.New()
+	gen := NewGenerator()
 	lines, err := gen.Generate(cfg)
 	if err != nil {
 		log.Fatalf("Failed to generate iptables-restore output: %v", err)
 	}
 
-	// Output to stdout
 	content := strings.Join(lines, "\n") + "\n"
 	fmt.Print(content)
 }
