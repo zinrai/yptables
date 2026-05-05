@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"maps"
+	"slices"
 	"strings"
 )
 
@@ -32,7 +34,8 @@ func (g *Generator) generateRuleLine(chain string, rule RuleConfig) string {
 
 	for _, match := range rule.Match {
 		parts = append(parts, "-m", match.Name)
-		for optName, optValue := range match.Options {
+		for _, optName := range slices.Sorted(maps.Keys(match.Options)) {
+			optValue := match.Options[optName]
 			parts = append(parts, fmt.Sprintf("--%s", optName), formatOptionValue(optName, optValue))
 		}
 	}
