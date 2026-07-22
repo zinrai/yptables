@@ -10,12 +10,6 @@ yptables is a tool that generates iptables-restore format configurations from YA
 - Generates iptables-restore format for atomic rule application
 - Full support for iptables match modules
 
-## Installation
-
-```bash
-$ go build -o yptables .
-```
-
 ## Usage
 
 ```bash
