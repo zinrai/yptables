@@ -16,6 +16,7 @@ func main() {
 	flag.Parse()
 
 	if flag.NArg() != 1 {
+		printVersion()
 		flag.Usage()
 		os.Exit(1)
 	}
